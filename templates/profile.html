@@ -1,0 +1,139 @@
+{% extends 'base.html' %}
+
+{% block title %}AI Quiz Generator - My Profile{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-4">
+        <div class="card shadow mb-4">
+            <div class="card-header bg-primary text-white">
+                <h2 class="h4 mb-0">Your Profile</h2>
+            </div>
+            <div class="card-body">
+                <div class="text-center mb-4">
+                    <div class="avatar-circle mb-3">
+                        <span class="initials">{{ current_user.username[0] | upper }}</span>
+                    </div>
+                    <h3 class="h5">{{ current_user.username }}</h3>
+                    <p class="text-muted">{{ current_user.email }}</p>
+                    <p class="text-muted">Joined: {{ current_user.created_at.strftime('%B %d, %Y') }}</p>
+                </div>
+                
+                <hr>
+                
+                <form method="POST" action="{{ url_for('auth.profile') }}">
+                    <div class="mb-3">
+                        <label class="form-label">Theme Preference</label>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" role="switch" 
+                                   id="themeSwitch" name="theme" value="light"
+                                   {% if user.theme_preference == 'light' %}checked{% endif %}>
+                            <label class="form-check-label" for="themeSwitch">
+                                <span id="themeSwitchLabel">
+                                    {% if user.theme_preference == 'light' %}
+                                    <i class="bi bi-sun"></i> Light Mode
+                                    {% else %}
+                                    <i class="bi bi-moon"></i> Dark Mode
+                                    {% endif %}
+                                </span>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-save me-1"></i> Save Preferences
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-8">
+        <div class="card shadow">
+            <div class="card-header bg-info text-white">
+                <h2 class="h4 mb-0">Your Quiz History</h2>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Quiz Title</th>
+                                <th>Topic</th>
+                                <th>Difficulty</th>
+                                <th>Date</th>
+                                <th>Questions</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if quizzes %}
+                                {% for quiz in quizzes %}
+                                <tr>
+                                    <td>{{ quiz.title }}</td>
+                                    <td>{{ quiz.topic }}</td>
+                                    <td>
+                                        <span class="badge {% if quiz.difficulty == 'easy' %}bg-success{% elif quiz.difficulty == 'hard' %}bg-danger{% else %}bg-warning{% endif %}">
+                                            {{ quiz.difficulty | capitalize }}
+                                        </span>
+                                    </td>
+                                    <td>{{ quiz.created_at.strftime('%b %d, %Y') }}</td>
+                                    <td>{{ quiz.questions | length }}</td>
+                                    <td>
+                                        <a href="#" class="btn btn-sm btn-primary load-quiz" data-id="{{ quiz.id }}">
+                                            <i class="bi bi-play-fill"></i> Take
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            {% else %}
+                                <tr>
+                                    <td colspan="6" class="text-center">
+                                        <i class="bi bi-inbox-fill text-muted" style="font-size: 2rem;"></i>
+                                        <p class="mt-2">No quizzes yet. Create your first quiz!</p>
+                                    </td>
+                                </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="card-footer">
+                <a href="{{ url_for('main.index') }}" class="btn btn-success">
+                    <i class="bi bi-plus-circle me-1"></i> Create New Quiz
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Toggle theme switch label
+        const themeSwitch = document.getElementById('themeSwitch');
+        const themeSwitchLabel = document.getElementById('themeSwitchLabel');
+        
+        if (themeSwitch) {
+            themeSwitch.addEventListener('change', function() {
+                if (this.checked) {
+                    themeSwitchLabel.innerHTML = '<i class="bi bi-sun"></i> Light Mode';
+                } else {
+                    themeSwitchLabel.innerHTML = '<i class="bi bi-moon"></i> Dark Mode';
+                }
+            });
+        }
+        
+        // Load quiz buttons
+        const loadQuizButtons = document.querySelectorAll('.load-quiz');
+        loadQuizButtons.forEach(button => {
+            button.addEventListener('click', function(e) {
+                e.preventDefault();
+                const quizId = this.getAttribute('data-id');
+                window.location.href = '/#' + quizId;
+            });
+        });
+    });
+</script>
+{% endblock %}

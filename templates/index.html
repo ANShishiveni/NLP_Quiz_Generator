@@ -1,0 +1,230 @@
+{% extends 'base.html' %}
+
+{% block title %}AI Quiz Generator - Home{% endblock %}
+
+{% block content %}
+<div id="app">
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h2 class="h4 mb-0">Create a New Quiz</h2>
+                </div>
+                <div class="card-body">
+                    <div class="mb-4">
+                        <h3 class="h5">Choose your content source:</h3>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="contentType" 
+                                   id="contentTypeText" value="text" checked>
+                            <label class="form-check-label" for="contentTypeText">
+                                <i class="bi bi-file-text me-1"></i> Paste your own text
+                            </label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="contentType" 
+                                   id="contentTypeTopic" value="topic">
+                            <label class="form-check-label" for="contentTypeTopic">
+                                <i class="bi bi-list-ul me-1"></i> Select a topic
+                            </label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="contentType" 
+                                   id="contentTypeFile" value="file">
+                            <label class="form-check-label" for="contentTypeFile">
+                                <i class="bi bi-file-earmark-text me-1"></i> Upload a document
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div id="textInputSection" class="mb-3">
+                        <label for="textInput" class="form-label">Enter your text:</label>
+                        <textarea class="form-control" id="textInput" rows="6" 
+                                  placeholder="Paste or type your text here..."></textarea>
+                    </div>
+                    
+                    <div id="topicSelectSection" class="mb-3 d-none">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label for="topicSelect" class="form-label">Select a topic:</label>
+                                <select class="form-select" id="topicSelect">
+                                    <option value="" selected disabled>Choose a topic...</option>
+                                    {% for topic in topics %}
+                                    <option value="{{ topic }}">{{ topic }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="subtopicSelect" class="form-label">Select a subtopic (optional):</label>
+                                <select class="form-select" id="subtopicSelect" disabled>
+                                    <option value="" selected>All subtopics</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="mt-3">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="card-title" id="topicTitle">Topic Description</h5>
+                                    <p class="card-text" id="topicDescription">Select a topic to see its description.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="fileUploadSection" class="mb-3 d-none">
+                        <label for="fileUpload" class="form-label">Upload a document:</label>
+                        <div class="input-group">
+                            <input type="file" class="form-control" id="fileUpload" 
+                                   accept=".txt,.pdf,.docx,.doc,.rtf">
+                            <button class="btn btn-outline-secondary" type="button" id="uploadBtn">
+                                <i class="bi bi-upload me-1"></i> Upload
+                            </button>
+                        </div>
+                        <small class="text-muted">Supported formats: TXT, PDF, DOCX, DOC, RTF</small>
+                        <div class="mt-2 d-none" id="uploadStatus">
+                            <div class="alert alert-info">
+                                <div class="spinner-border spinner-border-sm me-2" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                                <span id="uploadStatusText">Processing document...</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <hr class="my-4">
+                    
+                    <h3 class="h5 mb-3">Quiz Settings</h3>
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label for="numQuestions" class="form-label">Number of Questions:</label>
+                            <div class="input-group">
+                                <button class="btn btn-outline-secondary" type="button" id="decreaseQuestions">
+                                    <i class="bi bi-dash"></i>
+                                </button>
+                                <input type="number" class="form-control" id="numQuestions" min="1" max="20" value="5">
+                                <button class="btn btn-outline-secondary" type="button" id="increaseQuestions">
+                                    <i class="bi bi-plus"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <label for="difficulty" class="form-label">Difficulty Level:</label>
+                            <select class="form-select" id="difficulty">
+                                <option value="easy">Easy</option>
+                                <option value="medium" selected>Medium</option>
+                                <option value="hard">Hard</option>
+                            </select>
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <label class="form-label d-block">Question Types:</label>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="checkbox" id="typeMCQ" value="mcq" checked>
+                                <label class="form-check-label" for="typeMCQ">MCQ</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="checkbox" id="typeTF" value="true_false" checked>
+                                <label class="form-check-label" for="typeTF">True/False</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="checkbox" id="typeFillBlank" value="fill_blank" checked>
+                                <label class="form-check-label" for="typeFillBlank">Fill Blank</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="checkbox" id="typeMath" value="math">
+                                <label class="form-check-label" for="typeMath">Math</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <button id="generateBtn" class="btn btn-success">
+                        <i class="bi bi-magic me-1"></i> Generate Quiz
+                    </button>
+                    <div id="generationSpinner" class="spinner-border text-primary d-none ms-2" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4" id="quizHistorySection">
+            <div class="card shadow">
+                <div class="card-header bg-info text-white">
+                    <h2 class="h4 mb-0">Quiz History</h2>
+                </div>
+                <div class="card-body">
+                    <div id="historyList" class="list-group">
+                        <!-- Quizzes will be loaded here -->
+                        <div class="text-center py-3" id="historyLoading">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                            <p class="mt-2">Loading quizzes...</p>
+                        </div>
+                        <div class="text-center py-3 d-none" id="historyEmpty">
+                            <i class="bi bi-inbox-fill text-muted" style="font-size: 2rem;"></i>
+                            <p class="mt-2">No quizzes yet. Create your first quiz!</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Templates for Quiz Components -->
+<script type="text/x-template" id="quiz-template">
+    <div>
+        <div class="card shadow mb-4">
+            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                <h2 class="h4 mb-0" id="quizTitle">Quiz</h2>
+                <button class="btn btn-sm btn-outline-light" id="newQuizBtn">
+                    <i class="bi bi-plus-circle me-1"></i> New Quiz
+                </button>
+            </div>
+            <div class="card-body">
+                <div id="quizQuestions">
+                    <!-- Questions will be loaded here -->
+                </div>
+            </div>
+            <div class="card-footer">
+                <button id="submitQuizBtn" class="btn btn-primary">
+                    <i class="bi bi-check-circle me-1"></i> Submit Quiz
+                </button>
+            </div>
+        </div>
+    </div>
+</script>
+
+<script type="text/x-template" id="results-template">
+    <div>
+        <div class="card shadow mb-4">
+            <div class="card-header bg-success text-white">
+                <h2 class="h4 mb-0">Quiz Results</h2>
+            </div>
+            <div class="card-body">
+                <div class="text-center mb-4">
+                    <div class="score-circle mb-3">
+                        <span id="scorePercentage">0%</span>
+                    </div>
+                    <h3 class="h5" id="scoreText">You scored 0 out of 0</h3>
+                </div>
+                
+                <div id="resultsDetails">
+                    <!-- Results details will be loaded here -->
+                </div>
+            </div>
+            <div class="card-footer">
+                <button id="newQuizFromResultsBtn" class="btn btn-primary">
+                    <i class="bi bi-plus-circle me-1"></i> Create New Quiz
+                </button>
+            </div>
+        </div>
+    </div>
+</script>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/app.js') }}"></script>
+{% endblock %}

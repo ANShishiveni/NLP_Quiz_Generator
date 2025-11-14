@@ -1,0 +1,233 @@
+/* Global Styles */
+:root {
+    --primary-color: #3a86ff;
+    --secondary-color: #8338ec;
+    --success-color: #38b000;
+    --warning-color: #ffbe0b;
+    --danger-color: #ff006e;
+    --info-color: #3a86ff;
+}
+
+body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+footer {
+    margin-top: auto;
+}
+
+/* Theme-specific styles */
+[data-bs-theme="light"] {
+    --quiz-bg-color: rgba(0, 0, 0, 0.05);
+    --option-hover-color: rgba(0, 0, 0, 0.08);
+}
+
+[data-bs-theme="dark"] {
+    --quiz-bg-color: rgba(255, 255, 255, 0.05);
+    --option-hover-color: rgba(255, 255, 255, 0.08);
+}
+
+/* Card enhancements */
+.card {
+    border-radius: 8px;
+    overflow: hidden;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+}
+
+.card-header {
+    font-weight: 500;
+}
+
+/* Quiz Container Styling */
+.question-container {
+    margin-bottom: 2rem;
+    padding: 1rem;
+    border-radius: 8px;
+    background-color: var(--quiz-bg-color);
+}
+
+.question-text {
+    font-weight: 500;
+    margin-bottom: 1rem;
+}
+
+.question-options {
+    list-style-type: none;
+    padding-left: 0;
+}
+
+.option-item {
+    margin-bottom: 0.5rem;
+    padding: 0.75rem;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.option-item:hover {
+    background-color: var(--option-hover-color);
+}
+
+.option-item.selected {
+    background-color: var(--bs-primary);
+    color: white;
+}
+
+/* Fill in the blank styling */
+.fill-blank-input {
+    border-width: 0 0 2px 0;
+    border-color: var(--bs-primary);
+    background-color: transparent;
+    padding: 0.25rem;
+    width: 150px;
+    transition: all 0.2s;
+}
+
+.fill-blank-input:focus {
+    outline: none;
+    border-color: var(--bs-info);
+}
+
+/* Results styling */
+.score-circle {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background-color: var(--bs-success);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    margin: 0 auto;
+}
+
+.result-item {
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border-radius: 8px;
+}
+
+.result-correct {
+    background-color: rgba(56, 176, 0, 0.2);
+    border-left: 4px solid var(--bs-success);
+}
+
+.result-incorrect {
+    background-color: rgba(255, 0, 110, 0.1);
+    border-left: 4px solid var(--bs-danger);
+}
+
+/* Loading animation */
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+
+.loading-pulse {
+    animation: pulse 1.5s infinite;
+}
+
+/* Quiz History Styles */
+.quiz-history-item {
+    transition: all 0.2s ease;
+    margin-bottom: 0.5rem;
+    border-left: 3px solid transparent;
+}
+
+.quiz-history-item:hover {
+    border-left-color: var(--bs-primary);
+    transform: translateX(3px);
+}
+
+.quiz-history-item h5 {
+    font-size: 1rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 180px;
+}
+
+#historyList {
+    max-height: 500px;
+    overflow-y: auto;
+}
+
+/* Match the history section height to the creation form */
+@media (min-width: 768px) {
+    #quizHistorySection .card {
+        height: calc(100% - 2rem);
+    }
+    
+    #quizHistorySection .card-body {
+        overflow-y: auto;
+    }
+}
+
+/* Profile and Avatar Styles */
+.avatar-circle {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background-color: var(--bs-primary);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.5rem;
+    margin: 0 auto;
+}
+
+.initials {
+    font-weight: 500;
+}
+
+/* Subtopic description card */
+#topicDescription {
+    max-height: 150px;
+    overflow-y: auto;
+}
+
+/* Animation for UI elements */
+.btn {
+    transition: all 0.2s ease;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+}
+
+/* Form control improvements */
+.form-control:focus, .form-select:focus {
+    box-shadow: 0 0 0 0.25rem rgba(58, 134, 255, 0.25);
+}
+
+/* Navbar brand enhancement */
+.navbar-brand {
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+/* Improve table styles */
+.table-hover tbody tr:hover {
+    background-color: var(--quiz-bg-color);
+}
+
+/* Responsive Improvements */
+@media (max-width: 768px) {
+    .card-header h2 {
+        font-size: 1.2rem;
+    }
+    
+    .form-check-inline {
+        margin-bottom: 0.5rem;
+    }
+}
