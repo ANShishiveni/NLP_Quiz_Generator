@@ -28,7 +28,10 @@ app = Flask(__name__)
 
 # Initialize Migrate after app is created
 migrate = Migrate(app, db)
-app.secret_key = os.environ.get("SESSION_SECRET", "quiz-generator-secret")
+sessionSecret = os.environ.get("SESSION_SECRET")
+if not sessionSecret:
+    raise RuntimeError("SESSION_SECRET must be set in the environment")
+app.secret_key = sessionSecret
 app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)  # Needed for url_for to generate with https
 
 # Configure the database
