@@ -193,24 +193,17 @@ def generate_quiz():
 @login_required
 def get_quiz(quiz_id):
     """Retrieve a specific quiz by ID"""
-    # First check memory cache
+    # Always authorize against the database before using the in-memory cache.
+    db_quiz = QuizDB.query.get(quiz_id)
+    if not db_quiz:
+        return jsonify({"error": "Quiz not found"}), 404
+    if db_quiz.user_id != current_user.id:
+        return jsonify({"error": "Unauthorized access to quiz"}), 403
+
     quiz = quizzes.get(quiz_id)
-    
     if not quiz:
-        # If not in memory, try to get from database
-        db_quiz = QuizDB.query.get(quiz_id)
-        if not db_quiz:
-            return jsonify({"error": "Quiz not found"}), 404
-            
-        # Check if quiz belongs to current user
-        if db_quiz.user_id != current_user.id:
-            return jsonify({"error": "Unauthorized access to quiz"}), 403
-        
-        # Convert DB model to dataclass
         quiz_obj = Quiz.from_db(db_quiz)
         quiz = quiz_obj.to_dict()
-        
-        # Update memory cache
         quizzes[quiz_id] = quiz
     
     return jsonify({"quiz": quiz})
@@ -250,24 +243,17 @@ def submit_quiz():
     quiz_id = data.get('quizId')
     answers = data.get('answers', {})
     
-    # First try to get quiz from memory cache
+    # Authorize ownership before consulting the shared in-memory cache.
+    db_quiz = QuizDB.query.get(quiz_id)
+    if not db_quiz:
+        return jsonify({"error": "Invalid quiz ID"}), 400
+    if db_quiz.user_id != current_user.id:
+        return jsonify({"error": "Unauthorized access to quiz"}), 403
+
     quiz = quizzes.get(quiz_id)
-    
-    # If not in memory, try to get from database
     if not quiz:
-        db_quiz = QuizDB.query.get(quiz_id)
-        if not db_quiz:
-            return jsonify({"error": "Invalid quiz ID"}), 400
-            
-        # Check if quiz belongs to current user
-        if db_quiz.user_id != current_user.id:
-            return jsonify({"error": "Unauthorized access to quiz"}), 403
-        
-        # Convert DB model to dataclass and then to dict
         quiz_obj = Quiz.from_db(db_quiz)
         quiz = quiz_obj.to_dict()
-        
-        # Update memory cache
         quizzes[quiz_id] = quiz
     
     score = 0
